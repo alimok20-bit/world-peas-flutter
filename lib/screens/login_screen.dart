@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'categories_screen.dart';
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Главный экран")),
+      body: const Center(
+        child: Text("Добро пожаловать"),
+      ),
+    );
+  }
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,51 +27,59 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  // ✅ Проверка заполненности
+  bool isValid() {
+    return emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty;
+  }
+
+  void login() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>  CategoriesScreen(cartItems: []), // твой главный экран
+      ), 
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 🔄 слушаем изменения в полях
+    emailController.addListener(() => setState(() {}));
+    passwordController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
+      appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
-            const SizedBox(height: 30),
-
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: "Email"),
             ),
-
-            const SizedBox(height: 15),
-
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: "Password"),
             ),
+            const SizedBox(height: 20),
 
-            const SizedBox(height: 30),
-
+            // 🔒 КНОПКА БЛОКИРУЕТСЯ
             ElevatedButton(
-              onPressed: () {
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(isGuest: false),
-                  ),
-                );
-
-              },
+              onPressed: isValid() ? login : null,
               child: const Text("Login"),
             ),
           ],

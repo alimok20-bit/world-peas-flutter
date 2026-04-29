@@ -8,6 +8,7 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => CartModel(),
+      lazy: true,
       child: const MyApp(),
     ),
   );

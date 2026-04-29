@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'products_screen.dart';
+import 'package:provider/provider.dart';
+import '../models/cart_model.dart';
 
 class CategoriesScreen extends StatelessWidget {
 
