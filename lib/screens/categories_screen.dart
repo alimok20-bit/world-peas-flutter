@@ -12,9 +12,9 @@ class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = [
-      {'name': 'Фрук и овощи', 'icon': Icons.local_florist, 'color': Colors.orange},
-      {'name': 'Мя и птица', 'icon': Icons.set_meal, 'color': Colors.redAccent},
-      {'name': 'Гото блюда', 'icon': Icons.restaurant, 'color': Colors.green},
+      {'name': 'Фрукты и овощи', 'icon': Icons.local_florist, 'color': Colors.orange},
+      {'name': 'Мясо и птица', 'icon': Icons.set_meal, 'color': Colors.redAccent},
+      {'name': 'Готовые блюда', 'icon': Icons.restaurant, 'color': Colors.green},
     ];
 
     return Scaffold(
