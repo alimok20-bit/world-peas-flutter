@@ -1,136 +1,134 @@
-import 'package:flutter/material.dart';
-import 'cart_screen.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/cart_model.dart';
+import '../services/database_service.dart';
+import 'cart_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
-
   final String categoryName;
-  final List<Map<String, dynamic>> cartItems;
 
-  const ProductsScreen({
-    super.key,
-    required this.categoryName,
-    required this.cartItems,
-  });
+  const ProductsScreen({super.key, required this.categoryName});
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  
+  late final Future<List<Map<String, dynamic>>> _productsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _productsFuture = DatabaseService.instance.getProductsByCategory(
+      widget.categoryName,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> products;
-
-    
-
-    if (widget.categoryName == 'Фрукты и овощи') {
-      products = [
-        {'name': 'Яблоко', 'price': 3500, 'color': Colors.redAccent},
-        {'name': 'Банан', 'price': 1500, 'color': Colors.yellow},
-        {'name': 'Морковь', 'price': 1000, 'color': Colors.orange},
-        {'name': 'Томат', 'price': 2500, 'color': Colors.red},
-      ];
-    } else if (widget.categoryName == 'Мясо и птица') {
-      products = [
-        {'name': 'Курица', 'price': 5000, 'color': Colors.brown},
-        {'name': 'Говядина', 'price': 6000, 'color': Colors.redAccent},
-        {'name': 'Свинина', 'price': 5000, 'color': Colors.orange},
-        {'name': 'Баранина', 'price': 7000, 'color': Colors.deepOrange},
-      ];
-    } else if (widget.categoryName == 'Готовые блюда') {
-      products = [
-        {'name': 'Пицца', 'price': 3000, 'color': Colors.orange},
-        {'name': 'Бургер', 'price': 2500, 'color': Colors.brown},
-        {'name': 'Паста', 'price': 2000, 'color': Colors.yellow},
-        {'name': 'Салат', 'price': 3000, 'color': Colors.green},
-      ];
-    } else {
-      products = [];
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
         actions: [
-  Consumer<CartModel>(
-    builder: (context, cart, child) {
-      return Stack(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CartScreen(),
-                ),
+          Consumer<CartModel>(
+            builder: (context, cart, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CartScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  if (cart.items.isNotEmpty)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${cart.items.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),
-          if (cart.items.isNotEmpty)
-            Positioned(
-              right: 6,
-              top: 6,
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                constraints: const BoxConstraints(
-                  minWidth: 16,
-                  minHeight: 16,
-                ),
-                child: Text(
-                  '${cart.items.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
         ],
-      );
-    },
-  ),
-],      ),
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _productsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
+          final products = snapshot.data ?? [];
+          if (products.isEmpty) {
+            return const Center(child: Text('Товары не найдены'));
+          }
 
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: product['color'] as Color,
-                child: Text(
-                  (product['name'] as String).substring(0, 1),
-                  style: const TextStyle(color: Colors.white),
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index];
+              final productName = product['name'] as String;
+              final assetPath = product['imagePath'] as String?;
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: assetPath != null
+                        ? AssetImage(assetPath)
+                        : null,
+                    child: assetPath == null
+                        ? const Icon(
+                            Icons.shopping_bag,
+                            color: Colors.white,
+                            size: 24,
+                          )
+                        : null,
+                  ),
+                  title: Text(
+                    productName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${product['price']} ₸'),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      Provider.of<CartModel>(
+                        context,
+                        listen: false,
+                      ).addItem(product);
+                    },
+                    child: const Text('Добавить в корзину'),
+                  ),
                 ),
-              ),
-
-              title: Text(
-                product['name'] as String,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-
-              subtitle: Text('${product['price']} ₸'),
-
-              trailing: ElevatedButton(
-                onPressed: () {
-                  Provider.of<CartModel>(context, listen: false).addItem(product);
-                },
-                child: const Text("Добавить в корзину"),
-              ),
-            ),
+              );
+            },
           );
         },
       ),

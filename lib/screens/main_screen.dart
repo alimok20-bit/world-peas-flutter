@@ -14,13 +14,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  final List<Map<String, dynamic>> cartItems = [];
 
   List<Widget> get _screens => [
-        CategoriesScreen(cartItems: cartItems),
-        const CartScreen(),
-        ProfileScreen(isGuest: widget.isGuest),
-      ];
+    const CategoriesScreen(),
+    const CartScreen(),
+    ProfileScreen(isGuest: widget.isGuest),
+  ];
 
   void _onTap(int index) {
     setState(() {
@@ -37,18 +36,12 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _selectedIndex,
         onTap: _onTap,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.store),
-            label: 'Категории',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Категории'),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
             label: 'Корзина',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
         ],
       ),
     );

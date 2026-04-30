@@ -1,63 +1,95 @@
 import 'package:flutter/material.dart';
+
+import '../services/database_service.dart';
 import 'products_screen.dart';
-import 'package:provider/provider.dart';
-import '../models/cart_model.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
+  const CategoriesScreen({super.key});
 
-  final List<Map<String, dynamic>> cartItems;
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
 
-  const CategoriesScreen({super.key, required this.cartItems});
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  late final Future<List<Map<String, dynamic>>> _categoriesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = DatabaseService.instance.getCategories();
+  }
+
+  IconData _iconFromName(String iconName) {
+    switch (iconName) {
+      case 'local_florist':
+        return Icons.local_florist;
+      case 'set_meal':
+        return Icons.set_meal;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'emoji_food_beverage':
+        return Icons.emoji_food_beverage;
+      case 'cake':
+        return Icons.cake;
+      case 'local_drink':
+        return Icons.local_drink;
+      default:
+        return Icons.category;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      {'name': 'Фрукты и овощи', 'icon': Icons.local_florist, 'color': Colors.orange},
-      {'name': 'Мясо и птица', 'icon': Icons.set_meal, 'color': Colors.redAccent},
-      {'name': 'Готовые блюда', 'icon': Icons.restaurant, 'color': Colors.green},
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Категории"),
-      ),
-      body: ListView.builder(
-  itemCount: categories.length,
-  itemBuilder: (context, index) {
-    final category = categories[index];
+      appBar: AppBar(title: const Text('Категории')),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _categoriesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      child: ListTile(
-        leading: Icon(
-          category['icon'] as IconData,
-          color: category['color'] as Color,
-          size: 28,
-        ),
+          final categories = snapshot.data ?? [];
+          if (categories.isEmpty) {
+            return const Center(child: Text('Категории не найдены'));
+          }
 
-        title: Text(
-          category['name'] as String,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+          return ListView.builder(
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final iconName = category['icon'] as String;
+              final colorValue = category['color'] as int;
 
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  ProductsScreen(
-  categoryName: category['name'] as String,
-  cartItems: cartItems,
-),
-            ),
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: ListTile(
+                  leading: Icon(
+                    _iconFromName(iconName),
+                    color: Color(colorValue),
+                    size: 28,
+                  ),
+                  title: Text(
+                    category['name'] as String,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductsScreen(
+                          categoryName: category['name'] as String,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),
-    );
-  },
-),
     );
   }
 }

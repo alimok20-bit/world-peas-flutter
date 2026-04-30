@@ -4,7 +4,6 @@ import 'cart_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-
   final bool isGuest;
 
   const HomeScreen({super.key, required this.isGuest});
@@ -14,16 +13,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _currentIndex = 0;
-
-  List<Map<String, dynamic>> cartItems = [];
 
   @override
   Widget build(BuildContext context) {
-
     final screens = [
-      CategoriesScreen(cartItems: cartItems),
+      const CategoriesScreen(),
       CartScreen(),
       ProfileScreen(isGuest: widget.isGuest),
     ];
@@ -40,18 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
         },
 
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Главная",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Главная"),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
             label: "Корзина",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Профи",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Профиль"),
         ],
       ),
     );

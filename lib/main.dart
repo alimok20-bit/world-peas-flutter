@@ -7,13 +7,12 @@ import 'screens/welcome_screen.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => CartModel(),
+      create: (context) => CartModel()..loadCart(),
       lazy: true,
       child: const MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -23,9 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'World Peas',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
+      theme: ThemeData(primarySwatch: Colors.green),
       home: const WelcomeScreen(),
     );
   }
