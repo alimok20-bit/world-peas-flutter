@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) =>  CategoriesScreen(cartItems: []), // твой главный экран
+        builder: (context) => const MainScreen(), // твой главный экран
       ), 
     );
   }

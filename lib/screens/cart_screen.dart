@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import '../models/cart_model.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+  final bool? isGuest;
+
+  const CartScreen({super.key, this.isGuest});
 
   @override
   Widget build(BuildContext context) {

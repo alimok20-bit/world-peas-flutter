@@ -25,6 +25,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> products;
 
+    
+
     if (widget.categoryName == 'Фрукты и овощи') {
       products = [
         {'name': 'Яблоко', 'price': 3500, 'color': Colors.redAccent},
