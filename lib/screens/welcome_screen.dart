@@ -39,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
                 //   ),
                 // );     
               },
-              child: const Text("Начать покупки"),
+              child: const Text("Регистрация / Вход"),
             ),
             TextButton(
               onPressed: () {
