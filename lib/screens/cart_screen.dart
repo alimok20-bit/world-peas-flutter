@@ -53,13 +53,62 @@ class CartScreen extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              "Итого: ${cart.totalPrice} ₸",
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Итого: ${cart.totalPrice} ₸",
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: cart.items.isEmpty
+                      ? null
+                      : () async {
+                          final cartModel = Provider.of<CartModel>(context, listen: false);
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Оформление заказа'),
+                              content: const Text(
+                                'Транзакция выполнена. Доставка будет одобрена в ближайшее время.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                  child: const Text('Отмена'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(true);
+                                  },
+                                  child: const Text('ОК'),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (confirmed == true) {
+                            await cartModel.clearCart();
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Заказ подтвержден. Ожидайте окончания доставки.',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                  child: const Text('Оформить заказ'),
+                ),
+              ],
             ),
           ),
 
